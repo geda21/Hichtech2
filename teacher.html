@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Hi Tech Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="p-6 flex justify-between items-center bg-white shadow">
+        <h1 class="text-2xl font-bold">Teacher Dashboard</h1>
+        <div id="profile" class="flex items-center space-x-4">
+            <span id="user-email"></span>
+            <button id="logout" class="px-4 py-2 bg-red-600 text-white rounded">Logout</button>
+        </div>
+    </nav>
+    <main class="p-6">
+        <div id="posts-list" class="bg-white p-8 rounded shadow-md">
+            <h2 class="text-xl font-bold mb-4">Announcements & Materials</h2>
+        </div>
+    </main>
+    <script>
+        const { createClient } = window.supabase;
+        const supabase = createClient('https://jqguibaxagunlpyicnmo.supabase.co', 'sb_publishable_jjNYHSvSj_jDluW4PP5IUQ_1tgtFLBk');
+        
+        // Check auth
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            if (!user) window.location.href = 'login.html';
+            document.getElementById('user-email').textContent = user.email;
+        });
+        
+        document.getElementById('logout').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        });
+        
+        // View posts
+        async function loadPosts() {
+            const { data: posts, error } = await supabase.from('posts').select('*').or('audience.eq.teacher,audience.eq.all');
+            if (error) {
+                alert(error.message);
+                return;
+            }
+            
+            const list = document.getElementById('posts-list');
+            if (posts.length === 0) {
+                list.innerHTML += '<p>No content available</p>';
+                return;
+            }
+            
+            posts.forEach(post => {
+                list.innerHTML += \`
+                    <div class="p-4 border-b">
+                        <h3 class="font-bold">\${post.title}</h3>
+                        <p class="text-sm text-gray-500">\${post.type}</p>
+                        <a href="\${post.file_url}" target="_blank" class="text-blue-600">View/Download</a>
+                    </div>
+                \`;
+            });
+        }
+        
+        loadPosts();
+    </script>
+</body>
+</html>

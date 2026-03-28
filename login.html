@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Hi Tech Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <form id="login-form" class="bg-white p-8 rounded shadow-md w-96">
+        <h2 class="text-2xl font-bold mb-4">Login</h2>
+        <input type="email" id="email" placeholder="Email" class="w-full p-2 mb-4 border rounded" required>
+        <input type="password" id="password" placeholder="Password" class="w-full p-2 mb-4 border rounded" required>
+        <button type="submit" class="w-full p-2 bg-blue-600 text-white rounded">Login</button>
+    </form>
+    <script>
+        const { createClient } = window.supabase;
+        const supabase = createClient('https://jqguibaxagunlpyicnmo.supabase.co', 'sb_publishable_jjNYHSvSj_jDluW4PP5IUQ_1tgtFLBk');
+        
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert(error.message);
+                return;
+            }
+            
+            // Fetch role
+            const { data: user, error: userError } = await supabase.from('users').select('role').eq('id', data.user.id).single();
+            if (userError) {
+                alert(userError.message);
+                return;
+            }
+            
+            // Redirect based on role
+            if (user.role === 'admin') window.location.href = 'admin.html';
+            else if (user.role === 'teacher') window.location.href = 'teacher.html';
+            else window.location.href = 'student.html';
+        });
+    </script>
+</body>
+</html>
