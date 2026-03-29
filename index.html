@@ -9,39 +9,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { font-family: 'Inter', sans-serif; }
-        .hero-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #581c87 100%); }
     </style>
     <script src="./js/supabase.js"></script>
-    <script src="./js/app.js"></script>
 </head>
 <body class="bg-gray-50">
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    </div>
-                    <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Hi Tech Academy</span>
-                </div>
-                <div class="space-x-4">
-                    <a href="login.html" class="px-6 py-2 text-blue-600 font-semibold hover:text-blue-700 transition">Login</a>
-                    <a href="signup.html" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition">Get Started</a>
-                </div>
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">H</div>
+                <span class="text-xl font-bold text-gray-800">Hi Tech Academy</span>
+            </div>
+            <div class="space-x-4">
+                <a href="login.html" class="text-gray-600 hover:text-blue-600 font-medium">Login</a>
+                <a href="signup.html" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">Join Now</a>
             </div>
         </div>
     </nav>
-    <section class="hero-gradient text-white py-20 text-center">
-        <div class="container mx-auto px-6">
-            <h1 class="text-5xl md:text-6xl font-bold mb-6">Welcome to the Future of Education</h1>
-            <p class="text-xl mb-8 opacity-90">Empowering students and teachers with technology</p>
-            <div class="flex justify-center space-x-4">
-                <a href="signup.html" class="px-8 py-3 bg-white text-purple-600 rounded-lg font-semibold hover:scale-105 transition">Start Learning</a>
-                <a href="#features" class="px-8 py-3 border-2 border-white rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition">Learn More</a>
+
+    <header class="hero-gradient text-white py-24 px-6 text-center">
+        <h1 class="text-5xl font-extrabold mb-6">Master the Skills of Tomorrow</h1>
+        <p class="text-xl mb-10 opacity-80 max-w-2xl mx-auto">The ultimate platform for digital learning, resource sharing, and academic excellence.</p>
+        <div class="flex justify-center gap-4">
+            <a href="signup.html" class="bg-white text-blue-900 px-8 py-3 rounded-full font-bold hover:shadow-xl transition">Get Started Free</a>
+        </div>
+    </header>
+
+    <section class="py-20 container mx-auto px-6">
+        <div class="grid md:grid-cols-3 gap-10">
+            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-bold mb-3 text-blue-600">For Students</h3>
+                <p class="text-gray-600">Access PDFs, videos, and images uploaded by your instructors anytime.</p>
+            </div>
+            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-bold mb-3 text-purple-600">For Teachers</h3>
+                <p class="text-gray-600">Manage your classroom materials and track student progress effortlessly.</p>
+            </div>
+            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-bold mb-3 text-green-600">For Admins</h3>
+                <p class="text-gray-600">Complete control over the platform users and content management.</p>
             </div>
         </div>
     </section>
-    </body>
+
+    <div id="loading" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-white p-5 rounded-lg">Loading...</div>
+    </div>
+</body>
 </html>
