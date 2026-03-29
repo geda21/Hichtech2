@@ -1,4 +1,3 @@
-// Authentication Management System
 class AuthManager {
     constructor() {
         this.loadingDiv = document.getElementById('loading');
@@ -14,47 +13,29 @@ class AuthManager {
     }
 
     hideLoading() {
-        if (this.loadingDiv) {
-            this.loadingDiv.classList.add('hidden');
-        }
-    }
-
-    async validateEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            throw new Error('Please enter a valid email address');
-        }
-        return true;
-    }
-
-    async validatePassword(password) {
-        if (password.length < 6) {
-            throw new Error('Password must be at least 6 characters long');
-        }
-        return true;
+        if (this.loadingDiv) this.loadingDiv.classList.add('hidden');
     }
 
     async login(email, password) {
         try {
-            await this.validateEmail(email);
-            await this.validatePassword(password);
-
             const { data: authData, error: authError } = await window.supabaseClient.auth.signInWithPassword({
-                email,
-                password
+                email, password
             });
 
             if (authError) throw authError;
 
+            // Fetch the role from your custom 'users' table
             const { data: userData, error: userError } = await window.supabaseClient
                 .from('users')
                 .select('role')
                 .eq('id', authData.user.id)
                 .single();
 
-            if (userError) throw userError;
+            if (userError) {
+                console.error("Role fetch error:", userError);
+                throw new Error("User record not found in database.");
+            }
 
-            // Store user info in session storage
             sessionStorage.setItem('userRole', userData.role);
             sessionStorage.setItem('userEmail', email);
 
@@ -66,34 +47,26 @@ class AuthManager {
 
     async signup(email, password) {
         try {
-            await this.validateEmail(email);
-            await this.validatePassword(password);
-
-            // Note: In Supabase, signUp might return a user even if 
-            // email confirmation is required.
             const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
-                email,
-                password
+                email, password
             });
 
             if (authError) throw authError;
 
-            // Only insert into public.users if auth was successful
             if (authData.user) {
+                // IMPORTANT: Default role is 'student'. 
+                // You must manually change this to 'admin' in the Supabase Dashboard for admins.
                 const { error: insertError } = await window.supabaseClient
                     .from('users')
-                    .insert([
-                        {
-                            id: authData.user.id,
-                            email: email,
-                            role: 'student', // Default role
-                            created_at: new Date().toISOString()
-                        }
-                    ]);
+                    .insert([{
+                        id: authData.user.id,
+                        email: email,
+                        role: 'student', 
+                        created_at: new Date().toISOString()
+                    }]);
 
                 if (insertError) throw insertError;
             }
-
             return { success: true };
         } catch (error) {
             throw error;
@@ -101,64 +74,49 @@ class AuthManager {
     }
 
     init() {
-        // Handle Login
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                this.showLoading('Signing in...');
-
+                this.showLoading('Verifying credentials...');
                 const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
 
                 try {
                     const userData = await this.login(email, password);
-
-                    // FIXED: Removed leading slashes for GitHub Pages compatibility
+                    // Use relative paths ONLY (no starting slash)
                     const redirectMap = {
                         'admin': 'admin.html',
-                        'student': 'student.html',
-                        'teacher': 'teacher.html'
+                        'teacher': 'teacher.html',
+                        'student': 'student.html'
                     };
-
                     window.location.href = redirectMap[userData.role] || 'index.html';
                 } catch (error) {
                     this.hideLoading();
-                    alert(error.message);
+                    alert("Login Failed: " + error.message);
                 }
             });
         }
 
-        // Handle Signup
         const signupForm = document.getElementById('signupForm');
         if (signupForm) {
             signupForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                this.showLoading('Creating account...');
-
+                this.showLoading('Creating secure account...');
                 const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
 
                 try {
                     await this.signup(email, password);
-                    alert('Account created successfully! Please check your email to verify your account.');
-                    // FIXED: Removed leading slash
+                    alert('Success! Please verify your email, then login.');
                     window.location.href = 'login.html';
                 } catch (error) {
                     this.hideLoading();
-                    alert(error.message);
+                    alert("Signup Error: " + error.message);
                 }
             });
         }
     }
 }
 
-// Initialize authentication
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if supabaseClient is available from supabase.js
-    if (window.supabaseClient) {
-        new AuthManager();
-    } else {
-        console.error("Supabase client not initialized. Check your supabase.js file.");
-    }
-});
+document.addEventListener('DOMContentLoaded', () => { if(window.supabaseClient) new AuthManager(); });
