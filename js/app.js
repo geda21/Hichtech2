@@ -1,43 +1,60 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const loadingDiv = document.getElementById('loading');
-    
-    const showLoading = () => {
-        if (loadingDiv) loadingDiv.classList.remove('hidden');
-    };
-    
-    const hideLoading = () => {
-        if (loadingDiv) loadingDiv.classList.add('hidden');
-    };
-    
-    showLoading();
-    
-    try {
-        // Check if user is already logged in
-        const { data: { user } } = await window.supabaseClient.auth.getUser();
-        
-        if (user) {
-            // Get user role
-            const { data: userData } = await window.supabaseClient
-                .from('users')
-                .select('role')
-                .eq('id', user.id)
-                .single();
-            
-            if (userData) {
-                const role = userData.role;
-                // Redirect to appropriate dashboard
-                if (role === 'admin') {
-                    window.location.href = '/admin.html';
-                } else if (role === 'student') {
-                    window.location.href = '/student.html';
-                } else if (role === 'teacher') {
-                    window.location.href = '/teacher.html';
+// Main Application Entry Point
+class App {
+    constructor() {
+        this.loadingDiv = document.getElementById('loading');
+        this.init();
+    }
+
+    showLoading() {
+        if (this.loadingDiv) {
+            this.loadingDiv.classList.remove('hidden');
+        }
+    }
+
+    hideLoading() {
+        if (this.loadingDiv) {
+            this.loadingDiv.classList.add('hidden');
+        }
+    }
+
+    async init() {
+        this.showLoading();
+
+        try {
+            // Check if user is logged in
+            const { data: { user }, error } = await window.supabaseClient.auth.getUser();
+
+            if (user && !error) {
+                // Get user role
+                const { data: userData } = await window.supabaseClient
+                    .from('users')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (userData) {
+                    // Redirect to appropriate dashboard
+                    const redirectMap = {
+                        'admin': '/admin.html',
+                        'student': '/student.html',
+                        'teacher': '/teacher.html'
+                    };
+
+                    if (redirectMap[userData.role]) {
+                        window.location.href = redirectMap[userData.role];
+                        return;
+                    }
                 }
             }
+        } catch (error) {
+            console.error('Error checking authentication:', error);
+        } finally {
+            this.hideLoading();
         }
-    } catch (error) {
-        console.error('Error checking authentication:', error);
-    } finally {
-        hideLoading();
     }
+}
+
+// Initialize app
+document.addEventListener('DOMContentLoaded', () => {
+    new App();
 });
