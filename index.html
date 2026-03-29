@@ -6,54 +6,51 @@
     <title>Hi Tech Academy | Future of Education</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        .hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #581c87 100%); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .hero-mesh {
+            background-color: #ffffff;
+            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                              radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                              radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+        }
     </style>
     <script src="./js/supabase.js"></script>
 </head>
-<body class="bg-gray-50">
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+<body class="bg-white text-gray-900">
+    <nav class="fixed w-full z-50 glass border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">H</div>
-                <span class="text-xl font-bold text-gray-800">Hi Tech Academy</span>
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight text-gray-900">Hi Tech <span class="text-indigo-600">Academy</span></span>
             </div>
-            <div class="space-x-4">
-                <a href="login.html" class="text-gray-600 hover:text-blue-600 font-medium">Login</a>
-                <a href="signup.html" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">Join Now</a>
+            <div class="hidden md:flex space-x-8 font-semibold text-sm">
+                <a href="login.html" class="text-gray-600 hover:text-indigo-600 transition">Log in</a>
+                <a href="signup.html" class="bg-indigo-600 text-white px-6 py-2.5 rounded-full hover:bg-indigo-700 hover:shadow-lg transition transform hover:-translate-y-0.5">Get Started</a>
             </div>
         </div>
     </nav>
 
-    <header class="hero-gradient text-white py-24 px-6 text-center">
-        <h1 class="text-5xl font-extrabold mb-6">Master the Skills of Tomorrow</h1>
-        <p class="text-xl mb-10 opacity-80 max-w-2xl mx-auto">The ultimate platform for digital learning, resource sharing, and academic excellence.</p>
-        <div class="flex justify-center gap-4">
-            <a href="signup.html" class="bg-white text-blue-900 px-8 py-3 rounded-full font-bold hover:shadow-xl transition">Get Started Free</a>
-        </div>
-    </header>
-
-    <section class="py-20 container mx-auto px-6">
-        <div class="grid md:grid-cols-3 gap-10">
-            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <h3 class="text-xl font-bold mb-3 text-blue-600">For Students</h3>
-                <p class="text-gray-600">Access PDFs, videos, and images uploaded by your instructors anytime.</p>
+    <section class="pt-32 pb-20 px-6 hero-mesh text-white min-h-[90vh] flex items-center">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <span class="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest uppercase bg-indigo-500/20 border border-indigo-400/30 rounded-full text-indigo-300">Edition 2026</span>
+                <h1 class="text-6xl md:text-7xl font-extrabold leading-tight mb-6">Learn without <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-pink-400">boundaries.</span></h1>
+                <p class="text-lg text-gray-300 mb-10 max-w-lg leading-relaxed">The professional platform for students, teachers, and administrators to share resources in real-time.</p>
+                <div class="flex space-x-4">
+                    <a href="signup.html" class="bg-white text-indigo-900 px-8 py-4 rounded-2xl font-bold hover:bg-gray-100 transition shadow-2xl">Start Learning</a>
+                    <a href="login.html" class="bg-transparent border-2 border-white/20 px-8 py-4 rounded-2xl font-bold hover:bg-white/10 transition">Instructor Portal</a>
+                </div>
             </div>
-            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <h3 class="text-xl font-bold mb-3 text-purple-600">For Teachers</h3>
-                <p class="text-gray-600">Manage your classroom materials and track student progress effortlessly.</p>
-            </div>
-            <div class="p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <h3 class="text-xl font-bold mb-3 text-green-600">For Admins</h3>
-                <p class="text-gray-600">Complete control over the platform users and content management.</p>
+            <div class="relative hidden md:block">
+                <div class="absolute -inset-4 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl blur-2xl opacity-30 animate-pulse"></div>
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800" class="relative rounded-3xl shadow-2xl border border-white/10" alt="Learning">
             </div>
         </div>
     </section>
-
-    <div id="loading" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
-        <div class="bg-white p-5 rounded-lg">Loading...</div>
-    </div>
 </body>
 </html>
