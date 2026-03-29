@@ -69,16 +69,8 @@ class AuthManager {
             await this.validateEmail(email);
             await this.validatePassword(password);
 
-            // Check if user already exists
-            const { data: existingUsers } = await window.supabaseClient
-                .from('users')
-                .select('email')
-                .eq('email', email);
-
-            if (existingUsers && existingUsers.length > 0) {
-                throw new Error('User with this email already exists');
-            }
-
+            // Note: In Supabase, signUp might return a user even if 
+            // email confirmation is required.
             const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
                 email,
                 password
@@ -86,18 +78,21 @@ class AuthManager {
 
             if (authError) throw authError;
 
-            const { error: insertError } = await window.supabaseClient
-                .from('users')
-                .insert([
-                    {
-                        id: authData.user.id,
-                        email: email,
-                        role: 'student',
-                        created_at: new Date().toISOString()
-                    }
-                ]);
+            // Only insert into public.users if auth was successful
+            if (authData.user) {
+                const { error: insertError } = await window.supabaseClient
+                    .from('users')
+                    .insert([
+                        {
+                            id: authData.user.id,
+                            email: email,
+                            role: 'student', // Default role
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
 
-            if (insertError) throw insertError;
+                if (insertError) throw insertError;
+            }
 
             return { success: true };
         } catch (error) {
@@ -119,14 +114,14 @@ class AuthManager {
                 try {
                     const userData = await this.login(email, password);
 
-                    // Redirect based on role
+                    // FIXED: Removed leading slashes for GitHub Pages compatibility
                     const redirectMap = {
-                        'admin': '/admin.html',
-                        'student': '/student.html',
-                        'teacher': '/teacher.html'
+                        'admin': 'admin.html',
+                        'student': 'student.html',
+                        'teacher': 'teacher.html'
                     };
 
-                    window.location.href = redirectMap[userData.role] || '/index.html';
+                    window.location.href = redirectMap[userData.role] || 'index.html';
                 } catch (error) {
                     this.hideLoading();
                     alert(error.message);
@@ -147,7 +142,8 @@ class AuthManager {
                 try {
                     await this.signup(email, password);
                     alert('Account created successfully! Please check your email to verify your account.');
-                    window.location.href = '/login.html';
+                    // FIXED: Removed leading slash
+                    window.location.href = 'login.html';
                 } catch (error) {
                     this.hideLoading();
                     alert(error.message);
@@ -159,5 +155,10 @@ class AuthManager {
 
 // Initialize authentication
 document.addEventListener('DOMContentLoaded', () => {
-    new AuthManager();
+    // Check if supabaseClient is available from supabase.js
+    if (window.supabaseClient) {
+        new AuthManager();
+    } else {
+        console.error("Supabase client not initialized. Check your supabase.js file.");
+    }
 });
