@@ -1,47 +1,55 @@
-// Supabase Configuration
-// 1. Go to your Supabase Dashboard
-// 2. Click 'Settings' (cog icon) -> 'API'
-// 3. Copy the 'Project URL' and 'anon' public key
-const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY';
+// js/supabase.js
 
-// Initialize the Supabase Client
-// We attach it to the 'window' object so auth.js and dashboard.js can use it.
-try {
-    if (!window['@supabase/supabase-js']) {
-        throw new Error("Supabase CDN failed to load. Check your internet connection.");
+// Supabase Configuration provided by user
+const SUPABASE_URL = "https://jqguibaxagunlpyicnmo.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_jjNYHSvSj_jDluW4PP5IUQ_1tgtFLBk";
+
+// Initialize Supabase Client with Pro settings
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
     }
-    
-    const { createClient } = window['@supabase/supabase-js'];
-    window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    console.log("✅ Supabase initialized successfully.");
-} catch (error) {
-    console.error("❌ Supabase Initialization Error:", error.message);
-}
+});
+
+// Global error handler
+window.handleError = (error, context = '') => {
+    console.error(`Error in ${context}:`, error);
+    const message = error.message || 'An unexpected error occurred';
+    // Smooth alert for professional feel
+    alert(`Hi Tech Academy - ${context}: ${message}`);
+};
+
+// Export for global use across auth.js and dashboard.js
+window.supabaseClient = supabaseClient;
+window.api = {
+    supabase: supabaseClient
+};
 
 /**
- * Security Helper: Protects pages from unauthorized access.
- * Usage: Call this at the start of dashboard.js
+ * PRO ROLE PROTECTOR
+ * Blocks unauthorized access. Add checkAccess('admin') to admin.html, etc.
  */
-async function protectPage(requiredRole = null) {
+async function checkAccess(requiredRole) {
     const { data: { session }, error } = await window.supabaseClient.auth.getSession();
     
-    // If no session, send them back to login
     if (error || !session) {
         window.location.href = 'login.html';
-        return null;
+        return;
     }
 
-    // If a specific role is required (e.g., 'admin')
-    if (requiredRole) {
-        const userRole = sessionStorage.getItem('userRole');
-        if (userRole !== requiredRole) {
-            alert("Access Denied: You do not have permission to view this page.");
-            window.location.href = 'login.html';
-            return null;
-        }
-    }
+    const userRole = sessionStorage.getItem('userRole');
 
-    return session.user;
+    if (requiredRole && userRole !== requiredRole) {
+        console.warn(`Access Denied: ${userRole} attempted to enter ${requiredRole} zone.`);
+        
+        const homeMap = { 
+            'admin': 'admin.html', 
+            'teacher': 'teacher.html', 
+            'student': 'student.html' 
+        };
+        
+        window.location.href = homeMap[userRole] || 'login.html';
+    }
 }
