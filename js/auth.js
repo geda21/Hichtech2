@@ -1,63 +1,37 @@
 // js/auth.js
-class AuthManager {
-    constructor() {
-        this.loadingDiv = document.getElementById('loading');
-        this.init();
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) return alert(error.message);
+
+            const { data: profile } = await window.supabaseClient.from('users').select('role').eq('id', data.user.id).single();
+            sessionStorage.setItem('userRole', profile.role);
+            
+            const paths = { admin: 'admin.html', teacher: 'teacher.html', student: 'student.html' };
+            window.location.href = paths[profile.role] || 'index.html';
+        });
     }
 
-    async login(email, password) {
-        try {
-            const { data: authData, error: authError } = await window.supabaseClient.auth.signInWithPassword({
-                email, password
-            });
+    if (signupForm) {
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-            if (authError) throw authError;
+            const { data, error } = await window.supabaseClient.auth.signUp({ email, password });
+            if (error) return alert(error.message);
 
-            // Fetch user's professional role from the database
-            const { data: userData, error: userError } = await window.supabaseClient
-                .from('users')
-                .select('role')
-                .eq('id', authData.user.id)
-                .single();
-
-            if (userError) throw new Error("Could not verify user role.");
-
-            // Save role for the session
-            sessionStorage.setItem('userRole', userData.role);
-            return userData.role;
-        } catch (error) {
-            throw error;
-        }
+            await window.supabaseClient.from('users').insert([{ id: data.user.id, email, role: 'student' }]);
+            alert("Account created! You can now log in.");
+            window.location.href = 'login.html';
+        });
     }
-
-    init() {
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const pass = document.getElementById('password').value;
-
-                try {
-                    const role = await this.login(email, pass);
-                    
-                    // FIXED: Professional relative redirects
-                    const redirectMap = {
-                        'admin': 'admin.html',
-                        'teacher': 'teacher.html',
-                        'student': 'student.html'
-                    };
-
-                    const target = redirectMap[role] || 'index.html';
-                    console.log(`Access Granted. Role: ${role}. Redirecting to ${target}`);
-                    window.location.href = target;
-                    
-                } catch (error) {
-                    alert("Authentication Error: " + error.message);
-                }
-            });
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => new AuthManager());
+});
